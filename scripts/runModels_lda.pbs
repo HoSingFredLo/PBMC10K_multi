@@ -1,0 +1,29 @@
+#!/bin/bash -l
+## Job will last 6 hours.
+#PBS -l walltime=6:00:00
+## Job needs 1 nodes and 28 cores per node.
+#PBS -l nodes=1:ppn=28
+## Job request memory
+#PBS -lmem=180gb # or 180gb
+## Specify project credits name to use credits for running the job.
+#PBS -A lp_symbiosys
+## Batch job name.
+#PBS -N PBMC10k_multi
+## Email options.
+#PBS -m abe
+#PBS -M hosing.lo@student.kuleuven.be
+
+module load Python/3.7.4-foss-2018a
+cd /staging/leuven/stg_00002/lcb/flo/ms/projects/PBMC10k_multi/scripts/
+singularity exec -B /lustre1,/staging,/data,/vsc-hard-mounts,/scratch pycistopic.sif python runModels_lda.py \
+        -i /staging/leuven/stg_00002/lcb/flo/ms/projects/PBMC10k_multi/output/pycistopic/PBMC10k_ATAC_cisTopicObject_wRNA.pkl \
+        -o /staging/leuven/stg_00002/lcb/flo/ms/projects/PBMC10k_multi/output/pycistopic/models/PBMC10k_ATAC_models_500_iter.pkl \
+        -nt 2,5,10,15,20,25,30,35,40,45,50 \
+        -c 16 \
+        -it 500 \
+        -a 50 \
+        -abt True \
+        -e 0.1 \
+        -ebt False \
+        -sp None \
+        -s 1
